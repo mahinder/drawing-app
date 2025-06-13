@@ -24,3 +24,18 @@ export interface DrawingProperties {
   strokeStyle: "solid" | "dashed" | "dotted";
 }
 
+export type ResizeHandle =
+  | "nw"
+  | "ne"
+  | "sw"
+  | "se"
+  | "n"
+  | "s"
+  | "e"
+  | "w"
+  | null;
+
+export interface ResizeHandleInfo {
+  position: Point;
+  type: ResizeHandle;
+}

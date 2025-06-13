@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { DrawingElement, Point, Tool } from "../../types/drawing";
+import {
+  DrawingElement,
+  Point,
+  ResizeHandle,
+  ResizeHandleInfo,
+  Tool,
+} from "../../types/drawing";
 import Header from "../../components/Header/Header";
 import Toolbar from "../../components/Toolbar/Toolbar";
 import Canvas from "../../components/Canvas/Canvas";
@@ -17,6 +23,7 @@ const DrawingApp: React.FC = () => {
     setSelectedElement,
     clearCanvas,
     loadState,
+    getResizeHandles,
   } = useCanvas();
 
   const [currentTool, setCurrentTool] = useState<Tool>("select");
@@ -32,6 +39,11 @@ const DrawingApp: React.FC = () => {
   const [strokeStyle, setStrokeStyle] = useState<"solid" | "dashed" | "dotted">(
     "solid"
   );
+
+  // Resize
+  const [isResizing, setIsResizing] = useState(false);
+  const [activeResizeHandle, setActiveResizeHandle] =
+    useState<ResizeHandle>(null);
 
   const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -83,6 +95,78 @@ const DrawingApp: React.FC = () => {
     return null;
   };
 
+  /*
+  Resize
+  */
+
+  const getCursorForHandle = (handle: ResizeHandle): string => {
+    switch (handle) {
+      case "nw":
+      case "se":
+        return "nw-resize";
+      case "ne":
+      case "sw":
+        return "ne-resize";
+      case "n":
+      case "s":
+        return "n-resize";
+      case "e":
+      case "w":
+        return "e-resize";
+      default:
+        return "default";
+    }
+  };
+
+  const resizeElement = (
+    element: DrawingElement,
+    handle: ResizeHandle,
+    mousePos: Point
+  ): DrawingElement => {
+    const { startPoint, endPoint } = element;
+    let newStartPoint = { ...startPoint };
+    let newEndPoint = { ...endPoint };
+
+    if (element.type === "line") {
+      if (handle === "nw") {
+        newStartPoint = mousePos;
+      } else if (handle === "se") {
+        newEndPoint = mousePos;
+      }
+    } else {
+      switch (handle) {
+        case "nw":
+          newStartPoint = { x: mousePos.x, y: mousePos.y };
+          break;
+        case "ne":
+          newStartPoint = { x: startPoint.x, y: mousePos.y };
+          newEndPoint = { x: mousePos.x, y: endPoint.y };
+          break;
+        case "sw":
+          newStartPoint = { x: mousePos.x, y: startPoint.y };
+          newEndPoint = { x: endPoint.x, y: mousePos.y };
+          break;
+        case "se":
+          newEndPoint = { x: mousePos.x, y: mousePos.y };
+          break;
+        case "n":
+          newStartPoint = { x: startPoint.x, y: mousePos.y };
+          break;
+        case "s":
+          newEndPoint = { x: endPoint.x, y: mousePos.y };
+          break;
+        case "w":
+          newStartPoint = { x: mousePos.x, y: startPoint.y };
+          break;
+        case "e":
+          newEndPoint = { x: mousePos.x, y: endPoint.y };
+          break;
+      }
+    }
+
+    return { ...element, startPoint: newStartPoint, endPoint: newEndPoint };
+  };
+
   useEffect(() => {
     redrawCanvas();
   }, [redrawCanvas]);
@@ -90,11 +174,44 @@ const DrawingApp: React.FC = () => {
   /* 
     Capture mouse events
   */
+  const isPointInResizeHandle = (
+    point: Point,
+    handle: ResizeHandleInfo
+  ): boolean => {
+    const handleSize = 6;
+    return (
+      Math.abs(point.x - handle.position.x) <= handleSize &&
+      Math.abs(point.y - handle.position.y) <= handleSize
+    );
+  };
+
+  const findResizeHandle = (
+    point: Point,
+    element: DrawingElement
+  ): ResizeHandle => {
+    const handles = getResizeHandles(element);
+    for (const handle of handles) {
+      if (isPointInResizeHandle(point, handle)) {
+        return handle.type;
+      }
+    }
+    return null;
+  };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const mousePos = getMousePos(e);
 
     if (currentTool === "select") {
+      // Check if clicking on a resize handle first
+      if (selectedElement) {
+        const handle = findResizeHandle(mousePos, selectedElement);
+        if (handle) {
+          setIsResizing(true);
+          setActiveResizeHandle(handle);
+          return;
+        }
+      }
+
       const clickedElement = findElementAtPoint(mousePos);
 
       if (clickedElement) {
@@ -119,8 +236,38 @@ const DrawingApp: React.FC = () => {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const mousePos = getMousePos(e);
+    const canvas = canvasRef.current;
 
-    if (isDragging && selectedElement) {
+    if (!canvas) return;
+
+    // Update cursor based on hover state
+    if (
+      currentTool === "select" &&
+      selectedElement &&
+      !isDragging &&
+      !isResizing
+    ) {
+      const handle = findResizeHandle(mousePos, selectedElement);
+      canvas.style.cursor = handle ? getCursorForHandle(handle) : "default";
+    } else if (currentTool === "select") {
+      canvas.style.cursor = "default";
+    } else {
+      canvas.style.cursor = "crosshair";
+    }
+
+    if (isResizing && selectedElement && activeResizeHandle) {
+      const resizedElement = resizeElement(
+        selectedElement,
+        activeResizeHandle,
+        mousePos
+      );
+
+      setElements((prev) =>
+        prev.map((el) => (el.id === selectedElement.id ? resizedElement : el))
+      );
+
+      setSelectedElement(resizedElement);
+    } else if (isDragging && selectedElement) {
       const deltaX = mousePos.x - dragOffset.x - selectedElement.startPoint.x;
       const deltaY = mousePos.y - dragOffset.y - selectedElement.startPoint.y;
 
@@ -201,6 +348,8 @@ const DrawingApp: React.FC = () => {
 
     setIsDrawing(false);
     setIsDragging(false);
+    setIsResizing(false);
+    setActiveResizeHandle(null);
   };
 
   const updateSelectedElement = (
@@ -221,7 +370,7 @@ const DrawingApp: React.FC = () => {
   };
 
   /**
-   * 
+   *
    * Saving shapes to local storage, can load and download
    */
 
