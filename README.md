@@ -1,46 +1,143 @@
-# Getting Started with Create React App
+# React Drawing App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, feature-rich drawing application built with React, TypeScript, and Tailwind CSS. Create beautiful drawings with shapes, lines, and customizable properties.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- 🎨 **Drawing Tools**: Rectangle, Circle, Line, and Selection tools
+- 🎯 **Element Selection**: Click to select and modify elements
+- 🎪 **Drag & Drop**: Move elements around the canvas
+- 🌈 **Customizable Properties**: Fill color, stroke color, width, and style
+- 💾 **Save/Load**: Persist your drawings in localStorage
+- 📸 **Export**: Save your artwork as PNG images
+- 🧹 **Clear Canvas**: Start fresh with one click
+- 📱 **Responsive Design**: Works on desktop and mobile devices
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **Lucide React** for icons
+- **Custom Hooks** for state management
+- **HTML5 Canvas** for drawing
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+```
+src/
+├── components/
+│   ├── Header.tsx          # Top navigation bar
+│   ├── Toolbar.tsx         # Tools and properties panel
+│   └── Canvas.tsx          # Drawing canvas component
+├── hooks/
+│   ├── useCanvas.ts        # Canvas operations and rendering
+├── types/
+│   └── drawing.ts            # TypeScript type definitions
+├── pages/
+|   └── Drawing
+|       └── DrawingApp.tsx      # Main application
+├── App.tsx                 # Root component
+├── index.tsx              # Application entry point
+└── index.css              # Global styles with Tailwind
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Getting Started
 
-### `npm run build`
+### Prerequisites
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Node.js (version 14 or higher)
+- npm or yarn
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. **Clone or download the project files**
 
-### `npm run eject`
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+3. **Start the development server**:
+   ```bash
+   npm start
+   ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. **Open your browser** and navigate to `http://localhost:3000`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Building for Production
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm run build
+```
 
-## Learn More
+## Usage
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Tools
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Select Tool**: Click to select elements, drag to move them
+- **Rectangle Tool**: Click and drag to create rectangles
+- **Circle Tool**: Click and drag to create circles
+- **Line Tool**: Click and drag to create straight lines
+
+### Properties
+
+- **Fill Color**: Set the interior color of shapes
+- **Stroke Color**: Set the border color
+- **Stroke Width**: Adjust line thickness (1-20px)
+- **Stroke Style**: Choose between solid, dashed, or dotted lines
+
+### Actions
+
+- **Save State**: Saves your drawing to browser's localStorage
+- **Load State**: Restores a previously saved drawing
+- **Export PNG**: Downloads your artwork as a PNG image
+- **Clear**: Removes all elements from the canvas
+
+## Custom Hooks
+
+### useDrawing
+Manages the drawing state including elements, tools, and user interactions.
+
+### useCanvas
+Handles canvas operations, rendering, and mouse position calculations.
+
+### useStorage
+Provides save/load functionality and image export capabilities.
+
+## Architecture
+
+The application follows a clean architecture pattern with:
+
+- **Separation of Concerns**: Each component has a single responsibility
+- **Custom Hooks**: Business logic is abstracted into reusable hooks
+- **Type Safety**: Full TypeScript support with proper type definitions
+- **Component Composition**: Modular components that can be easily maintained
+
+## Browser Compatibility
+
+- Chrome (recommended)
+- Firefox
+- Safari
+- Edge
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Future Enhancements
+
+- [ ] Undo/Redo functionality
+- [ ] Layer management
+- [ ] More drawing tools (polygon, text, etc.)
+- [ ] Grid and snap-to-grid
+- [ ] Zoom and pan
+- [ ] Real-time collaboration
+- [ ] Custom brushes and textures
