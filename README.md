@@ -4,14 +4,14 @@ A modern, feature-rich drawing application built with React, TypeScript, and Tai
 
 ## Features
 
-- 🎨 **Drawing Tools**: Rectangle, Circle, Line, and Selection tools
-- 🎯 **Element Selection**: Click to select and modify elements
-- 🎪 **Drag & Drop**: Move elements around the canvas
-- 🌈 **Customizable Properties**: Fill color, stroke color, width, and style
-- 💾 **Save/Load**: Persist your drawings in localStorage
-- 📸 **Export**: Save your artwork as PNG images
-- 🧹 **Clear Canvas**: Start fresh with one click
-- 📱 **Responsive Design**: Works on desktop and mobile devices
+- **Drawing Tools**: Rectangle, Circle, Line, and Selection tools
+- **Element Selection**: Click to select and modify elements
+- **Drag & Drop**: Move elements around the canvas
+- **Customizable Properties**: Fill color, stroke color, width, and style
+- **Save/Load**: Persist your drawings in localStorage
+- **Export**: Save your artwork as PNG images
+- **Clear Canvas**: Start fresh with one click
+- **Responsive Design**: Works on desktop and mobile devices
 
 ## Tech Stack
 
@@ -93,17 +93,6 @@ npm run build
 - **Export PNG**: Downloads your artwork as a PNG image
 - **Clear**: Removes all elements from the canvas
 
-## Custom Hooks
-
-### useDrawing
-Manages the drawing state including elements, tools, and user interactions.
-
-### useCanvas
-Handles canvas operations, rendering, and mouse position calculations.
-
-### useStorage
-Provides save/load functionality and image export capabilities.
-
 ## Architecture
 
 The application follows a clean architecture pattern with:
@@ -131,13 +120,3 @@ The application follows a clean architecture pattern with:
 ## License
 
 This project is open source and available under the MIT License.
-
-## Future Enhancements
-
-- [ ] Undo/Redo functionality
-- [ ] Layer management
-- [ ] More drawing tools (polygon, text, etc.)
-- [ ] Grid and snap-to-grid
-- [ ] Zoom and pan
-- [ ] Real-time collaboration
-- [ ] Custom brushes and textures
