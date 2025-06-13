@@ -27,9 +27,6 @@ const Canvas: React.FC<CanvasProps> = ({
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
-          style={{
-            cursor: currentTool === "select" ? "move" : "crosshair",
-          }}
         />
       </div>
     </div>

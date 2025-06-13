@@ -1,5 +1,9 @@
 import { useRef, useCallback, useState } from "react";
-import { Point, DrawingElement } from "../types/drawing";
+import {
+  Point,
+  DrawingElement,
+  ResizeHandleInfo,
+} from "../types/drawing";
 
 export const useCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -21,6 +25,43 @@ export const useCanvas = () => {
     },
     []
   );
+
+  const getElementBounds = (element: DrawingElement) => {
+    const minX = Math.min(element.startPoint.x, element.endPoint.x);
+    const minY = Math.min(element.startPoint.y, element.endPoint.y);
+    const maxX = Math.max(element.startPoint.x, element.endPoint.x);
+    const maxY = Math.max(element.startPoint.y, element.endPoint.y);
+
+    return { minX, minY, maxX, maxY };
+  };
+
+  const getResizeHandles = (element: DrawingElement): ResizeHandleInfo[] => {
+    const { minX, minY, maxX, maxY } = getElementBounds(element);
+
+    if (element.type === "line") {
+      return [
+        {
+          position: { x: element.startPoint.x, y: element.startPoint.y },
+          type: "nw",
+        },
+        {
+          position: { x: element.endPoint.x, y: element.endPoint.y },
+          type: "se",
+        },
+      ];
+    }
+
+    return [
+      { position: { x: minX, y: minY }, type: "nw" },
+      { position: { x: (minX + maxX) / 2, y: minY }, type: "n" },
+      { position: { x: maxX, y: minY }, type: "ne" },
+      { position: { x: maxX, y: (minY + maxY) / 2 }, type: "e" },
+      { position: { x: maxX, y: maxY }, type: "se" },
+      { position: { x: (minX + maxX) / 2, y: maxY }, type: "s" },
+      { position: { x: minX, y: maxY }, type: "sw" },
+      { position: { x: minX, y: (minY + maxY) / 2 }, type: "w" },
+    ];
+  };
 
   const drawElement = useCallback(
     (ctx: CanvasRenderingContext2D, element: DrawingElement) => {
@@ -93,6 +134,29 @@ export const useCanvas = () => {
         const maxY = Math.max(startPoint.y, endPoint.y) + 5;
 
         ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+
+        // Draw resize handles
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#ffffff";
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 1;
+
+        const handles = getResizeHandles(element);
+        handles.forEach((handle) => {
+          const handleSize = 6;
+          ctx.fillRect(
+            handle.position.x - handleSize / 2,
+            handle.position.y - handleSize / 2,
+            handleSize,
+            handleSize
+          );
+          ctx.strokeRect(
+            handle.position.x - handleSize / 2,
+            handle.position.y - handleSize / 2,
+            handleSize,
+            handleSize
+          );
+        });
       }
     },
     []
@@ -133,6 +197,7 @@ export const useCanvas = () => {
     selectedElement,
     setSelectedElement,
     clearCanvas,
-    loadState
+    loadState,
+    getResizeHandles
   };
 };
